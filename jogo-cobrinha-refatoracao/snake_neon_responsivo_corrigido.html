@@ -1,0 +1,495 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Snake Neon Responsivo</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --bg:#081120;
+    --panel:#111827;
+    --canvas:#132033;
+    --primary:#22c55e;
+    --secondary:#4ade80;
+    --text:#ffffff;
+}
+
+body{
+    min-height:100vh;
+    background:radial-gradient(circle at top,#18263d,#081120);
+    color:var(--text);
+    font-family:Arial,sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:auto;
+    padding:12px;
+}
+
+.container{
+    width:min(95vw,700px);
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+h1{
+    color:var(--primary);
+}
+
+.panel{
+    background:rgba(255,255,255,.06);
+    border-radius:16px;
+    padding:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+}
+
+.menu{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+select,button{
+    border:none;
+    border-radius:12px;
+    padding:10px 14px;
+    font-size:15px;
+}
+
+button{
+    background:var(--primary);
+    color:white;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.canvas-wrapper{
+    position:relative;
+    width:100%;
+    display:flex;
+    justify-content:center;
+}
+
+canvas{
+    background:var(--canvas);
+    border:3px solid var(--primary);
+    border-radius:18px;
+    width:min(92vw,600px);
+    height:min(92vw,600px);
+    max-height:70vh;
+    touch-action:none;
+}
+
+.rank{
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+    color:var(--primary);
+}
+
+.level-popup{
+    position:absolute;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    background:rgba(0,0,0,.7);
+    padding:12px 20px;
+    border-radius:12px;
+    font-size:20px;
+    opacity:0;
+    transition:.3s;
+    pointer-events:none;
+}
+
+.level-popup.show{
+    opacity:1;
+}
+
+.dpad{
+    display:none;
+    justify-content:center;
+    margin-top:8px;
+}
+
+.dpad-grid{
+    display:grid;
+    grid-template-columns:repeat(3,70px);
+    gap:10px;
+}
+
+.dpad button{
+    width:70px;
+    height:70px;
+    font-size:22px;
+}
+
+@media(max-width:768px){
+    .dpad{
+        display:flex;
+    }
+
+    h1{
+        font-size:24px;
+    }
+
+    canvas{
+        width:92vw;
+        height:92vw;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+<h1>🐍 Snake Neon</h1>
+
+<div class="menu">
+<select id="theme">
+<option value="green">Verde Neon</option>
+<option value="blue">Azul Neon</option>
+<option value="red">Vermelho Neon</option>
+<option value="gold">Dourado</option>
+</select>
+
+<button id="startBtn">Iniciar</button>
+</div>
+</div>
+
+<div class="panel">
+<div>Pontos: <span id="score">0</span></div>
+<div>Recorde: <span id="best">0</span></div>
+<div>Tamanho: <span id="length">1</span></div>
+</div>
+
+<div class="rank" id="rank">🥉 Bronze</div>
+
+<div class="canvas-wrapper">
+<canvas id="game" width="600" height="600"></canvas>
+<div class="level-popup" id="popup"></div>
+</div>
+
+<div class="dpad">
+<div class="dpad-grid">
+<div></div>
+<button data-dir="up">↑</button>
+<div></div>
+
+<button data-dir="left">←</button>
+<button data-dir="down">↓</button>
+<button data-dir="right">→</button>
+</div>
+</div>
+
+</div>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+const scoreEl = document.getElementById("score");
+const bestEl = document.getElementById("best");
+const lengthEl = document.getElementById("length");
+const rankEl = document.getElementById("rank");
+const popup = document.getElementById("popup");
+
+const GRID = 25;
+const CELL = canvas.width / GRID;
+
+let snake = [];
+let food = {};
+let direction = {x:1,y:0};
+let nextDirection = {x:1,y:0};
+
+let running = false;
+let score = 0;
+let best = Number(localStorage.getItem("snake-best")) || 0;
+
+bestEl.textContent = best;
+
+const themes = {
+    green:["#22c55e","#4ade80","#132033"],
+    blue:["#38bdf8","#60a5fa","#10213d"],
+    red:["#ef4444","#fb7185","#2a1111"],
+    gold:["#facc15","#fde047","#2a2300"]
+};
+
+let currentTheme = themes.green;
+
+function init(){
+    snake = [
+        {x:10,y:10},
+        {x:9,y:10},
+        {x:8,y:10}
+    ];
+
+    direction = {x:1,y:0};
+    nextDirection = {x:1,y:0};
+
+    score = 0;
+
+    spawnFood();
+
+    updateUI();
+}
+
+function spawnFood(){
+    food = {
+        x:Math.floor(Math.random()*GRID),
+        y:Math.floor(Math.random()*GRID)
+    };
+}
+
+function update(){
+    direction = nextDirection;
+
+    const head = {
+        x:(snake[0].x + direction.x + GRID) % GRID,
+        y:(snake[0].y + direction.y + GRID) % GRID
+    };
+
+    // Corrigido: wrap instantâneo sem efeito visual bugado
+    snake.unshift(head);
+
+    for(let i=1;i<snake.length;i++){
+        if(
+            snake[i].x === head.x &&
+            snake[i].y === head.y
+        ){
+            running = false;
+            alert("Game Over!");
+            return;
+        }
+    }
+
+    if(head.x === food.x && head.y === food.y){
+        score += 100;
+
+        if(score > best){
+            best = score;
+            localStorage.setItem("snake-best",best);
+        }
+
+        spawnFood();
+
+        checkRank();
+    }else{
+        snake.pop();
+    }
+
+    updateUI();
+}
+
+function updateUI(){
+    scoreEl.textContent = score;
+    bestEl.textContent = best;
+    lengthEl.textContent = snake.length;
+}
+
+function checkRank(){
+    let rank = "🥉 Bronze";
+
+    if(snake.length >= 10){
+        rank = "🥈 Prata";
+    }
+
+    if(snake.length >= 20){
+        rank = "🥇 Gold";
+    }
+
+    if(snake.length >= 35){
+        rank = "💎 Diamante";
+    }
+
+    if(snake.length >= 50){
+        rank = "👑 Lendário";
+    }
+
+    if(rankEl.textContent !== rank){
+        rankEl.textContent = rank;
+
+        popup.textContent = "Novo Rank: " + rank;
+        popup.classList.add("show");
+
+        setTimeout(()=>{
+            popup.classList.remove("show");
+        },1800);
+    }
+}
+
+function drawSnake(){
+    snake.forEach((part,index)=>{
+
+        const centerX = part.x * CELL + CELL/2;
+        const centerY = part.y * CELL + CELL/2;
+
+        ctx.save();
+
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = currentTheme[0];
+
+        if(index === 0){
+
+            ctx.fillStyle = currentTheme[0];
+
+            ctx.beginPath();
+            ctx.arc(centerX,centerY,CELL/2.3,0,Math.PI*2);
+            ctx.fill();
+
+        }else{
+
+            const next = snake[index-1];
+
+            const dx = next.x - part.x;
+            const dy = next.y - part.y;
+
+            ctx.strokeStyle = currentTheme[1];
+            ctx.lineWidth = CELL - 8;
+            ctx.lineCap = "round";
+
+            ctx.beginPath();
+            ctx.moveTo(centerX,centerY);
+            ctx.lineTo(
+                centerX + dx * CELL,
+                centerY + dy * CELL
+            );
+            ctx.stroke();
+        }
+
+        ctx.restore();
+    });
+}
+
+function drawFood(){
+    ctx.save();
+
+    ctx.fillStyle = "#ef4444";
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = "#ef4444";
+
+    ctx.beginPath();
+    ctx.arc(
+        food.x * CELL + CELL/2,
+        food.y * CELL + CELL/2,
+        CELL/3,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.restore();
+}
+
+function draw(){
+    ctx.fillStyle = currentTheme[2];
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    drawFood();
+    drawSnake();
+}
+
+function loop(){
+    if(!running) return;
+
+    update();
+    draw();
+
+    setTimeout(()=>{
+        requestAnimationFrame(loop);
+    },110);
+}
+
+document.addEventListener("keydown",(e)=>{
+
+    if(e.key === "ArrowUp" && direction.y !== 1){
+        nextDirection = {x:0,y:-1};
+    }
+
+    if(e.key === "ArrowDown" && direction.y !== -1){
+        nextDirection = {x:0,y:1};
+    }
+
+    if(e.key === "ArrowLeft" && direction.x !== 1){
+        nextDirection = {x:-1,y:0};
+    }
+
+    if(e.key === "ArrowRight" && direction.x !== -1){
+        nextDirection = {x:1,y:0};
+    }
+});
+
+document.querySelectorAll("[data-dir]").forEach(btn=>{
+
+    btn.addEventListener("pointerdown",()=>{
+
+        const dir = btn.dataset.dir;
+
+        if(dir === "up" && direction.y !== 1){
+            nextDirection = {x:0,y:-1};
+        }
+
+        if(dir === "down" && direction.y !== -1){
+            nextDirection = {x:0,y:1};
+        }
+
+        if(dir === "left" && direction.x !== 1){
+            nextDirection = {x:-1,y:0};
+        }
+
+        if(dir === "right" && direction.x !== -1){
+            nextDirection = {x:1,y:0};
+        }
+    });
+});
+
+document.getElementById("theme").addEventListener("change",(e)=>{
+
+    currentTheme = themes[e.target.value];
+
+    document.documentElement.style.setProperty("--primary",currentTheme[0]);
+    document.documentElement.style.setProperty("--secondary",currentTheme[1]);
+    document.documentElement.style.setProperty("--canvas",currentTheme[2]);
+
+    draw();
+});
+
+document.getElementById("startBtn").addEventListener("click",()=>{
+
+    init();
+
+    if(!running){
+        running = true;
+        loop();
+    }
+});
+
+draw();
+</script>
+
+</body>
+</html>
