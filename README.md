@@ -4,7 +4,7 @@ Um jogo da cobrinha (**Snake Game**) totalmente funcional desenvolvido com **HTM
 
 O projeto foi criado para rodar diretamente no navegador em um único arquivo `.html`, oferecendo uma experiência moderna, responsiva e pronta para uso.
 
-> Projeto desenvolvido durante a prática do curso **Inteligências Artificiais Generativas Aplicada à Programação – ChatGPT**, do **SENAI**, com foco na aplicação de conceitos de desenvolvimento e utilização de IA como apoio no processo de construção de software.
+> Projeto desenvolvido durante a prática do curso **Inteligências Artificiais Generativas Aplicada à Programação – ChatGPT**, do **SENAI**, com foco na aplicação de conceitos de desenvolvimento front-end e utilização de IA como apoio no processo de construção de software.
 
 ---
 
@@ -466,7 +466,7 @@ Possíveis melhorias do projeto:
 - [ ] Escolha de dificuldade
 - [ ] Obstáculos
 - [ ] Modo infinito
-- [ ] Controle touch para mobile
+- [ x ] Controle touch para mobile
 - [ ] Ranking local
 
 ---
