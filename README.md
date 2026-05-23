@@ -466,7 +466,7 @@ Possíveis melhorias do projeto:
 - [ ] Escolha de dificuldade
 - [ ] Obstáculos
 - [ ] Modo infinito
-- [ x ] Controle touch para mobile
+- [x] Controle touch para mobile
 - [ ] Ranking local
 
 ---
