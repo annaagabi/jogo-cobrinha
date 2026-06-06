@@ -1,7 +1,9 @@
 {
+  "version": 2,
+  "public": true,
   "routes": [
     {
-      "src": "./jogo-cobrinha-refatoracao",
+      "src": "/",
       "dest": "/jogo-cobrinha-refatorado.html"
     }
   ]
