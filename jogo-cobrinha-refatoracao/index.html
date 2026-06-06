@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Snake Neon Ultra Deluxe 4.0</title>
+
+<style>
+
+/* =========================
+RESET
+========================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+/* =========================
+ROOT
+========================= */
+
+:root{
+
+    --bg:#0f172a;
+    --panel:#111827;
+    --canvas:#1e293b;
+
+    --green:#22c55e;
+    --green2:#4ade80;
+
+    --red:#ef4444;
+    --gold:#facc15;
+
+    --white:#ffffff;
+
+}
+
+/* =========================
+BODY
+========================= */
+
+body{
+
+    background:
+    radial-gradient(circle at top,#1e293b,#0f172a);
+
+    color:white;
+
+    font-family:
+    Inter,
+    Arial,
+    sans-serif;
+
+    min-height:100vh;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+
+    overflow:hidden;
+
+}
+
+/* =========================
+CONTAINER
+========================= */
+
+.container{
+
+    width:100%;
+    max-width:650px;
+
+    text-align:center;
+
+    position:relative;
+
+}
+
+h1{
+
+    margin-bottom:14px;
+
+    color:var(--green);
+
+    text-shadow:
+    0 0 10px rgba(34,197,94,.7);
+
+}
+
+/* =========================
+INFO
+========================= */
+
+.info{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:14px;
+
+    background:rgba(255,255,255,.05);
+
+    padding:12px 18px;
+
+    border-radius:14px;
+
+    backdrop-filter:blur(8px);
+
+}
+
+.score-box{
+
+    display:flex;
+
+    gap:20px;
+
+}
+
+.score-animate{
+
+    animation:scorePop .25s ease;
+
+}
+
+@keyframes scorePop{
+
+    0%{transform:scale(1);}
+    50%{transform:scale(1.3);}
+    100%{transform:scale(1);}
+
+}
+
+/* =========================
+BUTTONS
+========================= */
+
+button{
+
+    border:none;
+
+    background:var(--green);
+
+    color:white;
+
+    padding:14px 28px;
+
+    border-radius:12px;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+button:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+    0 0 18px rgba(34,197,94,.5);
+
+}
+
+.secondary-btn{
+
+    background:#374151;
+
+}
+
+/* =========================
+PAUSE BTN
+========================= */
+
+.pause-btn{
+
+    width:45px;
+    height:45px;
+
+    border-radius:12px;
+
+    padding:0;
+
+    font-size:18px;
+
+}
+
+/* =========================
+SETTINGS BTN
+========================= */
+
+.settings-btn{
+
+    position:absolute;
+
+    top:0;
+    right:0;
+
+    width:48px;
+    height:48px;
+
+    border-radius:14px;
+
+    background:rgba(255,255,255,.08);
+
+    font-size:22px;
+
+}
+
+/* =========================
+CANVAS
+========================= */
+
+.canvas-wrapper{
+
+    position:relative;
+
+}
+
+canvas{
+
+    width:100%;
+
+    aspect-ratio:1/1;
+
+    background:var(--canvas);
+
+    border:3px solid var(--green);
+
+    border-radius:18px;
+
+    transition:.25s;
+
+    box-shadow:
+    0 0 20px rgba(34,197,94,.25),
+    0 0 60px rgba(34,197,94,.08);
+
+}
+
+canvas.paused{
+
+    filter:blur(4px);
+
+}
+
+/* =========================
+PAUSE
+========================= */
+
+.pause-overlay{
+
+    position:absolute;
+
+    inset:0;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+    justify-content:center;
+
+    gap:18px;
+
+    font-size:54px;
+
+    font-weight:900;
+
+    letter-spacing:8px;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transition:.25s;
+
+}
+
+.pause-overlay.active{
+
+    opacity:1;
+    pointer-events:auto;
+
+}
+
+/* =========================
+OVERLAY
+========================= */
+
+.overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.82);
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+    justify-content:center;
+
+    gap:20px;
+
+    z-index:10;
+
+}
+
+.hidden{
+
+    display:none;
+
+}
+
+/* =========================
+MENU SECTION
+========================= */
+
+.menu-section{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+    width:280px;
+
+}
+
+.menu-section select{
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:12px;
+
+    background:#1f2937;
+
+    color:white;
+
+    font-size:15px;
+
+}
+
+/* =========================
+SETTINGS MODAL
+========================= */
+
+.settings-modal{
+
+    position:fixed;
+
+    top:50%;
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    background:#111827;
+
+    padding:24px;
+
+    border-radius:18px;
+
+    width:320px;
+
+    z-index:100;
+
+    box-shadow:
+    0 0 40px rgba(0,0,0,.5);
+
+}
+
+.settings-modal input{
+
+    width:100%;
+
+}
+
+/* =========================
+TIP
+========================= */
+
+.tip{
+
+    margin-top:14px;
+
+    opacity:.7;
+
+}
+
+/* =========================
+D-PAD
+========================= */
+
+.dpad{
+
+    margin-top:20px;
+
+    display:none;
+
+    justify-content:center;
+
+}
+
+.dpad-grid{
+
+    display:grid;
+
+    grid-template-columns:70px 70px 70px;
+
+    gap:10px;
+
+}
+
+.dpad button{
+
+    width:70px;
+    height:70px;
+
+    padding:0;
+
+    font-size:24px;
+
+    border-radius:18px;
+
+}
+
+/* =========================
+SHAKE
+========================= */
+
+@keyframes shake{
+
+    0%{transform:translate(0)}
+    20%{transform:translate(-5px,3px)}
+    40%{transform:translate(5px,-4px)}
+    60%{transform:translate(-4px,-3px)}
+    80%{transform:translate(4px,2px)}
+    100%{transform:translate(0)}
+
+}
+
+.shake{
+
+    animation:shake .35s;
+
+}
+
+/* =========================
+MOBILE
+========================= */
+
+@media(max-width:768px){
+
+    .dpad{
+        display:flex;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🐍 Snake Neon Ultra Deluxe</h1>
+
+<button
+class="settings-btn"
+onclick="openSettings()"
+>
+⚙️
+</button>
+
+<div class="info">
+
+<div class="score-box">
+
+<div>
+Pontos:
+<span id="score">0</span>
+</div>
+
+<div>
+Recorde:
+<span id="best">0</span>
+</div>
+
+<div>
+Ouro:
+<span id="coins">0</span>
+</div>
+
+</div>
+
+<button
+class="pause-btn"
+onclick="togglePause()"
+>
+⏸
+</button>
+
+</div>
+
+<div class="canvas-wrapper">
+
+<canvas
+id="game"
+width="600"
+height="600"
+></canvas>
+
+<div
+id="pauseOverlay"
+class="pause-overlay"
+>
+
+<div>PAUSE</div>
+
+<button onclick="backToMenu()">
+🏠 Menu
+</button>
+
+</div>
+
+</div>
+
+<div class="tip">
+Use ← ↑ ↓ → para mover | Espaço ou P para pausar
+</div>
+
+<!-- TOUCH -->
+
+<div class="dpad">
+
+<div class="dpad-grid">
+
+<div></div>
+<button data-dir="up">↑</button>
+<div></div>
+
+<button data-dir="left">←</button>
+<button data-dir="down">↓</button>
+<button data-dir="right">→</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- MENU -->
+
+<div id="menu" class="overlay">
+
+<h1>Snake Neon Ultra</h1>
+
+<p>Modo infinito ativado.</p>
+
+<div class="menu-section">
+
+<label>Skin</label>
+
+<select id="skinColor">
+
+<option value="dragon">
+🐉 Dragão
+</option>
+
+<option value="cyber">
+🤖 Cyber
+</option>
+
+<option value="toxic">
+☢️ Toxic
+</option>
+
+<option value="sunset">
+🌅 Sunset
+</option>
+
+</select>
+
+<label>Formato da Cabeça</label>
+
+<select id="headStyle">
+
+<option value="square">
+Quadrado
+</option>
+
+<option value="circle">
+Círculo
+</option>
+
+<option value="triangle">
+Triângulo
+</option>
+
+</select>
+
+<label>Tema</label>
+
+<select id="themeSelect">
+
+<option value="default">
+Default
+</option>
+
+<option value="retro">
+Retro
+</option>
+
+<option value="inferno">
+Inferno
+</option>
+
+<option value="midnight">
+Midnight
+</option>
+
+</select>
+
+<label>Dificuldade</label>
+
+<select id="difficulty">
+
+<option value="15">
+Fácil 15x15
+</option>
+
+<option value="25" selected>
+Médio 25x25
+</option>
+
+<option value="40">
+Difícil 40x40
+</option>
+
+</select>
+
+</div>
+
+<button onclick="startGame()">
+Iniciar
+</button>
+
+</div>
+
+<!-- GAME OVER -->
+
+<div
+id="gameOver"
+class="overlay hidden"
+>
+
+<h1>💀 Game Over</h1>
+
+<p>
+Pontuação:
+<span id="finalScore"></span>
+</p>
+
+<div style="display:flex; gap:12px;">
+
+<button onclick="restart()">
+Jogar Novamente
+</button>
+
+<button
+class="secondary-btn"
+onclick="backToMenu()"
+>
+🏠 Menu
+</button>
+
+</div>
+
+</div>
+
+<!-- SETTINGS -->
+
+<div
+id="settingsModal"
+class="settings-modal hidden"
+>
+
+<h2>Configurações</h2>
+
+<br>
+
+<label>Volume</label>
+
+<input
+type="range"
+id="volumeSlider"
+min="0"
+max="1"
+step="0.01"
+value="0.03"
+/>
+
+<br><br>
+
+<button onclick="resetBest()">
+Resetar Recorde
+</button>
+
+<br><br>
+
+<button onclick="closeSettings()">
+Fechar
+</button>
+
+</div>
+
+<script>
+
+/* ======================================
+CONFIG
+====================================== */
+
+const CONFIG = {
+
+    GRID:25,
+
+    BASE_SPEED:120,
+
+    MIN_SPEED:55,
+
+    SPEED_STEP:6,
+
+    SPECIAL_CHANCE:.1,
+
+    SPECIAL_DURATION:7000,
+
+    GHOST_FRAMES:3,
+
+    COLORS:{
+
+        bg:"#1e293b",
+
+        snake:"#22c55e",
+
+        snakeBody:"#4ade80",
+
+        food:"#ef4444",
+
+        eyes:"#ffffff",
+
+        tongue:"#ff4fd8"
+
+    }
+
+};
+
+/* ======================================
+SKINS
+====================================== */
+
+const SKINS = {
+
+    dragon:{
+        snake:"#22c55e",
+        snakeBody:"#15803d",
+        eyes:"#facc15",
+        tongue:"#ff4fd8",
+        food:"#c084fc"
+    },
+
+    cyber:{
+        snake:"#38bdf8",
+        snakeBody:"#2563eb",
+        eyes:"#ffffff",
+        tongue:"#ff006e",
+        food:"#f97316"
+    },
+
+    toxic:{
+        snake:"#a3e635",
+        snakeBody:"#65a30d",
+        eyes:"#111827",
+        tongue:"#ef4444",
+        food:"#7c3aed"
+    },
+
+    sunset:{
+        snake:"#fb7185",
+        snakeBody:"#ea580c",
+        eyes:"#fef08a",
+        tongue:"#ff006e",
+        food:"#22d3ee"
+    }
+
+};
+
+/* ======================================
+THEMES
+====================================== */
+
+const THEMES = {
+
+    default:{
+        bg:"#1e293b"
+    },
+
+    retro:{
+        bg:"#0f380f"
+    },
+
+    inferno:{
+        bg:"#160b0b"
+    },
+
+    midnight:{
+        bg:"#140021"
+    }
+
+};
+
+/* ======================================
+CANVAS
+====================================== */
+
+const canvas =
+document.getElementById("game");
+
+const ctx =
+canvas.getContext("2d");
+
+let size =
+canvas.width / CONFIG.GRID;
+
+/* ======================================
+UI
+====================================== */
+
+const scoreEl =
+document.getElementById("score");
+
+const bestEl =
+document.getElementById("best");
+
+const coinsEl =
+document.getElementById("coins");
+
+const pauseOverlay =
+document.getElementById("pauseOverlay");
+
+/* ======================================
+STORAGE
+====================================== */
+
+let best =
+Number(
+localStorage.getItem("snake-best")
+) || 0;
+
+let coins =
+Number(
+localStorage.getItem("snake-coins")
+) || 0;
+
+let volume =
+Number(
+localStorage.getItem("snake-volume")
+) || .03;
+
+let selectedHead =
+localStorage.getItem("snake-head")
+|| "square";
+
+let selectedTheme =
+localStorage.getItem("snake-theme")
+|| "default";
+
+let selectedSkin =
+localStorage.getItem("snake-skin")
+|| "dragon";
+
+document.getElementById("skinColor").value =
+selectedSkin;
+
+document.getElementById("headStyle").value =
+selectedHead;
+
+document.getElementById("themeSelect").value =
+selectedTheme;
+
+bestEl.textContent = best;
+
+coinsEl.textContent = coins;
+
+/* ======================================
+GAME STATE
+====================================== */
+
+let snake;
+let food;
+
+let direction;
+let nextDirection;
+
+let score;
+
+let running = false;
+let paused = false;
+
+let particles = [];
+
+let ghostTrail = [];
+
+let gameSpeed =
+CONFIG.BASE_SPEED;
+
+let lastTime = 0;
+let accumulator = 0;
+
+let inputQueue = [];
+
+let deathAnimation = false;
+let deathBlink = 0;
+
+/* ======================================
+AUDIO
+====================================== */
+
+const audioCtx =
+new(
+window.AudioContext ||
+window.webkitAudioContext
+)();
+
+function beep(freq,duration,type="sine"){
+
+    const osc =
+    audioCtx.createOscillator();
+
+    const gain =
+    audioCtx.createGain();
+
+    osc.connect(gain);
+
+    gain.connect(audioCtx.destination);
+
+    osc.type = type;
+
+    osc.frequency.value = freq;
+
+    gain.gain.value = volume;
+
+    osc.start();
+
+    osc.stop(
+        audioCtx.currentTime + duration
+    );
+
+}
+
+/* ======================================
+SETTINGS
+====================================== */
+
+function openSettings(){
+
+    document
+    .getElementById("settingsModal")
+    .classList
+    .remove("hidden");
+
+}
+
+function closeSettings(){
+
+    document
+    .getElementById("settingsModal")
+    .classList
+    .add("hidden");
+
+}
+
+function resetBest(){
+
+    localStorage.removeItem(
+        "snake-best"
+    );
+
+    best = 0;
+
+    bestEl.textContent = 0;
+
+}
+
+document
+.getElementById("volumeSlider")
+.addEventListener("input",e=>{
+
+    volume =
+    Number(e.target.value);
+
+    localStorage.setItem(
+        "snake-volume",
+        volume
+    );
+
+});
+
+/* ======================================
+INIT
+====================================== */
+
+function init(){
+
+    snake = [{x:10,y:10}];
+
+    direction = {x:1,y:0};
+
+    nextDirection = direction;
+
+    score = 0;
+
+    particles = [];
+
+    ghostTrail = [];
+
+    paused = false;
+
+    inputQueue = [];
+
+    gameSpeed =
+    CONFIG.BASE_SPEED;
+
+    scoreEl.textContent = score;
+
+    spawnFood();
+
+}
+
+/* ======================================
+APPLY THEME
+====================================== */
+
+function applyTheme(theme){
+
+    const t = THEMES[theme];
+
+    CONFIG.COLORS.bg = t.bg;
+
+    document.documentElement
+    .style
+    .setProperty("--canvas",t.bg);
+
+}
+
+/* ======================================
+APPLY SKIN
+====================================== */
+
+function applySkin(skinName){
+
+    const skin = SKINS[skinName];
+
+    CONFIG.COLORS.snake =
+    skin.snake;
+
+    CONFIG.COLORS.snakeBody =
+    skin.snakeBody;
+
+    CONFIG.COLORS.eyes =
+    skin.eyes;
+
+    CONFIG.COLORS.tongue =
+    skin.tongue;
+
+    CONFIG.COLORS.food =
+    skin.food;
+
+    document.documentElement
+    .style
+    .setProperty("--green",skin.snake);
+
+}
+
+/* ======================================
+FOOD
+====================================== */
+
+function spawnFood(){
+
+    while(true){
+
+        food = {
+
+            x:Math.floor(
+                Math.random()*CONFIG.GRID
+            ),
+
+            y:Math.floor(
+                Math.random()*CONFIG.GRID
+            ),
+
+            pulse:0
+
+        };
+
+        const collision =
+        snake.some(
+            s=>
+            s.x===food.x &&
+            s.y===food.y
+        );
+
+        if(!collision) return;
+
+    }
+
+}
+
+/* ======================================
+PARTICLES
+====================================== */
+
+function createParticles(x,y,color){
+
+    for(let i=0;i<12;i++){
+
+        particles.push({
+
+            x:x*size + size/2,
+
+            y:y*size + size/2,
+
+            vx:(Math.random()-.5)*5,
+
+            vy:(Math.random()-.5)*5,
+
+            life:30,
+
+            color
+
+        });
+
+    }
+
+}
+
+function updateParticles(){
+
+    particles.forEach(p=>{
+
+        p.x += p.vx;
+
+        p.y += p.vy;
+
+        p.life--;
+
+    });
+
+    particles =
+    particles.filter(
+        p=>p.life > 0
+    );
+
+}
+
+/* ======================================
+PAUSE
+====================================== */
+
+function togglePause(){
+
+    if(!running) return;
+
+    paused = !paused;
+
+    canvas.classList.toggle(
+        "paused",
+        paused
+    );
+
+    pauseOverlay.classList.toggle(
+        "active",
+        paused
+    );
+
+}
+
+/* ======================================
+INPUT
+====================================== */
+
+function queueDirection(dir){
+
+    inputQueue.push(dir);
+
+}
+
+function processInput(){
+
+    if(inputQueue.length===0)
+    return;
+
+    const dir =
+    inputQueue.shift();
+
+    const invalid =
+
+    dir.x === -direction.x &&
+    dir.y === -direction.y;
+
+    if(!invalid){
+
+        nextDirection = dir;
+
+    }
+
+}
+
+/* ======================================
+UPDATE
+====================================== */
+
+function update(){
+
+    if(paused) return;
+
+    processInput();
+
+    direction = nextDirection;
+
+    const head = {
+
+        x:
+        (
+            snake[0].x +
+            direction.x +
+            CONFIG.GRID
+        ) % CONFIG.GRID,
+
+        y:
+        (
+            snake[0].y +
+            direction.y +
+            CONFIG.GRID
+        ) % CONFIG.GRID
+
+    };
+
+    for(const part of snake){
+
+        if(
+            part.x===head.x &&
+            part.y===head.y
+        ){
+
+            triggerDeath();
+
+            return;
+
+        }
+
+    }
+
+    snake.unshift(head);
+
+    if(
+        head.x===food.x &&
+        head.y===food.y
+    ){
+
+        score += 100;
+
+        coins += 1;
+
+        localStorage.setItem(
+            "snake-coins",
+            coins
+        );
+
+        scoreEl.textContent =
+        score;
+
+        coinsEl.textContent =
+        coins;
+
+        createParticles(
+            food.x,
+            food.y,
+            CONFIG.COLORS.food
+        );
+
+        spawnFood();
+
+    }else{
+
+        snake.pop();
+
+    }
+
+    updateParticles();
+
+}
+
+/* ======================================
+DRAW CELL
+====================================== */
+
+function drawCell(x,y,color){
+
+    ctx.save();
+
+    ctx.shadowBlur = 15;
+
+    ctx.shadowColor = color;
+
+    ctx.fillStyle = color;
+
+    ctx.fillRect(
+
+        x*size + 2,
+
+        y*size + 2,
+
+        size - 4,
+
+        size - 4
+
+    );
+
+    ctx.restore();
+
+}
+
+/* ======================================
+DRAW SNAKE HEAD
+====================================== */
+
+function drawSnakeHead(x,y,type){
+
+    const px = x * size;
+    const py = y * size;
+
+    ctx.save();
+
+    ctx.fillStyle =
+    CONFIG.COLORS.snake;
+
+    ctx.shadowBlur = 20;
+
+    ctx.shadowColor =
+    CONFIG.COLORS.snake;
+
+    /* SHAPE */
+
+    if(type==="square"){
+
+        ctx.fillRect(
+            px+2,
+            py+2,
+            size-4,
+            size-4
+        );
+
+    }
+
+    if(type==="circle"){
+
+        ctx.beginPath();
+
+        ctx.arc(
+            px + size/2,
+            py + size/2,
+            size/2.4,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+    }
+
+    if(type==="triangle"){
+
+        ctx.beginPath();
+
+        ctx.moveTo(px+size/2,py+2);
+        ctx.lineTo(px+size-2,py+size-2);
+        ctx.lineTo(px+2,py+size-2);
+
+        ctx.closePath();
+
+        ctx.fill();
+
+    }
+
+    /* EYES */
+
+    ctx.fillStyle =
+    CONFIG.COLORS.eyes;
+
+    let eye1x,eye1y,eye2x,eye2y;
+
+    if(direction.x===1){
+
+        eye1x = px + size - 10;
+        eye1y = py + 8;
+
+        eye2x = px + size - 10;
+        eye2y = py + size - 8;
+
+    }
+
+    if(direction.x===-1){
+
+        eye1x = px + 10;
+        eye1y = py + 8;
+
+        eye2x = px + 10;
+        eye2y = py + size - 8;
+
+    }
+
+    if(direction.y===-1){
+
+        eye1x = px + 8;
+        eye1y = py + 10;
+
+        eye2x = px + size - 8;
+        eye2y = py + 10;
+
+    }
+
+    if(direction.y===1){
+
+        eye1x = px + 8;
+        eye1y = py + size - 10;
+
+        eye2x = px + size - 8;
+        eye2y = py + size - 10;
+
+    }
+
+    ctx.beginPath();
+
+    ctx.arc(eye1x,eye1y,3,0,Math.PI*2);
+    ctx.arc(eye2x,eye2y,3,0,Math.PI*2);
+
+    ctx.fill();
+
+    /* TONGUE */
+
+    if(Math.floor(Date.now()/200)%2===0){
+
+        ctx.strokeStyle =
+        CONFIG.COLORS.tongue;
+
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+
+        let tx = px + size/2;
+        let ty = py + size/2;
+
+        if(direction.x===1){
+
+            ctx.moveTo(px+size,ty);
+            ctx.lineTo(px+size+8,ty-3);
+            ctx.moveTo(px+size,ty);
+            ctx.lineTo(px+size+8,ty+3);
+
+        }
+
+        if(direction.x===-1){
+
+            ctx.moveTo(px,ty);
+            ctx.lineTo(px-8,ty-3);
+            ctx.moveTo(px,ty);
+            ctx.lineTo(px-8,ty+3);
+
+        }
+
+        if(direction.y===-1){
+
+            ctx.moveTo(tx,py);
+            ctx.lineTo(tx-3,py-8);
+            ctx.moveTo(tx,py);
+            ctx.lineTo(tx+3,py-8);
+
+        }
+
+        if(direction.y===1){
+
+            ctx.moveTo(tx,py+size);
+            ctx.lineTo(tx-3,py+size+8);
+            ctx.moveTo(tx,py+size);
+            ctx.lineTo(tx+3,py+size+8);
+
+        }
+
+        ctx.stroke();
+
+    }
+
+    ctx.restore();
+
+}
+
+/* ======================================
+DRAW FOOD
+====================================== */
+
+function drawFood(){
+
+    const pulse =
+    1 + Math.sin(Date.now()*0.008)*0.12;
+
+    const px =
+    food.x * size + size/2;
+
+    const py =
+    food.y * size + size/2;
+
+    const radius =
+    (size/3) * pulse;
+
+    ctx.save();
+
+    ctx.shadowBlur = 25;
+
+    ctx.shadowColor =
+    CONFIG.COLORS.food;
+
+    ctx.fillStyle =
+    CONFIG.COLORS.food;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        px,
+        py,
+        radius,
+        0,
+        Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.restore();
+
+}
+
+/* ======================================
+DRAW PARTICLES
+====================================== */
+
+function drawParticles(){
+
+    particles.forEach(p=>{
+
+        ctx.save();
+
+        ctx.globalAlpha =
+        p.life / 30;
+
+        ctx.fillStyle =
+        p.color;
+
+        ctx.fillRect(
+            p.x,
+            p.y,
+            4,
+            4
+        );
+
+        ctx.restore();
+
+    });
+
+}
+
+/* ======================================
+DRAW
+====================================== */
+
+function draw(){
+
+    ctx.fillStyle =
+    CONFIG.COLORS.bg;
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    drawFood();
+
+    snake.forEach((part,index)=>{
+
+        const color =
+
+        index===0
+        ? CONFIG.COLORS.snake
+        : CONFIG.COLORS.snakeBody;
+
+        if(index===0){
+
+            drawSnakeHead(
+                part.x,
+                part.y,
+                selectedHead
+            );
+
+        }else{
+
+            drawCell(
+                part.x,
+                part.y,
+                color
+            );
+
+        }
+
+    });
+
+    drawParticles();
+
+}
+
+/* ======================================
+LOOP
+====================================== */
+
+function gameLoop(timestamp){
+
+    if(!running) return;
+
+    const delta =
+    timestamp - lastTime;
+
+    lastTime = timestamp;
+
+    accumulator += delta;
+
+    if(
+        accumulator >= gameSpeed
+    ){
+
+        update();
+
+        accumulator = 0;
+
+    }
+
+    draw();
+
+    requestAnimationFrame(
+        gameLoop
+    );
+
+}
+
+/* ======================================
+DEATH
+====================================== */
+
+function triggerDeath(){
+
+    canvas.classList.add(
+        "shake"
+    );
+
+    setTimeout(()=>{
+
+        canvas.classList.remove(
+            "shake"
+        );
+
+    },350);
+
+    running = false;
+
+    document
+    .getElementById("finalScore")
+    .textContent = score;
+
+    document
+    .getElementById("gameOver")
+    .classList
+    .remove("hidden");
+
+}
+
+/* ======================================
+START
+====================================== */
+
+function startGame(){
+
+    audioCtx.resume();
+
+    selectedSkin =
+    document
+    .getElementById("skinColor")
+    .value;
+
+    selectedHead =
+    document
+    .getElementById("headStyle")
+    .value;
+
+    selectedTheme =
+    document
+    .getElementById("themeSelect")
+    .value;
+
+    CONFIG.GRID =
+    Number(
+        document
+        .getElementById("difficulty")
+        .value
+    );
+
+    size =
+    canvas.width / CONFIG.GRID;
+
+    localStorage.setItem(
+        "snake-skin",
+        selectedSkin
+    );
+
+    localStorage.setItem(
+        "snake-head",
+        selectedHead
+    );
+
+    localStorage.setItem(
+        "snake-theme",
+        selectedTheme
+    );
+
+    applyTheme(selectedTheme);
+
+    applySkin(selectedSkin);
+
+    document
+    .getElementById("menu")
+    .classList
+    .add("hidden");
+
+    document
+    .getElementById("gameOver")
+    .classList
+    .add("hidden");
+
+    init();
+
+    running = true;
+
+    lastTime =
+    performance.now();
+
+    requestAnimationFrame(
+        gameLoop
+    );
+
+}
+
+function restart(){
+
+    startGame();
+
+}
+
+function backToMenu(){
+
+    running = false;
+
+    paused = false;
+
+    pauseOverlay.classList.remove(
+        "active"
+    );
+
+    canvas.classList.remove(
+        "paused"
+    );
+
+    document
+    .getElementById("gameOver")
+    .classList
+    .add("hidden");
+
+    document
+    .getElementById("menu")
+    .classList
+    .remove("hidden");
+
+}
+
+/* ======================================
+KEYBOARD
+====================================== */
+
+document.addEventListener(
+"keydown",
+e=>{
+
+    if(
+        e.code === "Space" ||
+
+        e.key.toLowerCase() === "p"
+    ){
+
+        e.preventDefault();
+
+        togglePause();
+
+        return;
+
+    }
+
+    if(!running || paused)
+    return;
+
+    switch(e.key){
+
+        case "ArrowUp":
+            queueDirection({x:0,y:-1});
+        break;
+
+        case "ArrowDown":
+            queueDirection({x:0,y:1});
+        break;
+
+        case "ArrowLeft":
+            queueDirection({x:-1,y:0});
+        break;
+
+        case "ArrowRight":
+            queueDirection({x:1,y:0});
+        break;
+
+    }
+
+});
+
+/* ======================================
+TOUCH
+====================================== */
+
+document
+.querySelectorAll("[data-dir]")
+.forEach(btn=>{
+
+    btn.addEventListener(
+    "touchstart",
+    e=>{
+
+        e.preventDefault();
+
+        const dir =
+        btn.dataset.dir;
+
+        if(dir==="up"){
+            queueDirection({x:0,y:-1});
+        }
+
+        if(dir==="down"){
+            queueDirection({x:0,y:1});
+        }
+
+        if(dir==="left"){
+            queueDirection({x:-1,y:0});
+        }
+
+        if(dir==="right"){
+            queueDirection({x:1,y:0});
+        }
+
+    });
+
+});
+
+/* ======================================
+BOOT
+====================================== */
+
+applyTheme(selectedTheme);
+
+applySkin(selectedSkin);
+
+draw();
+
+</script>
+
+</body>
+</html>
