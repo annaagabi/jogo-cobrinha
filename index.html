@@ -57,12 +57,12 @@ body{
     min-height:100vh;
 
     display:flex;
-    align-items:center;
     justify-content:center;
 
     padding:20px;
 
-    overflow:hidden;
+    overflow-x:hidden;
+    overflow-y:auto;
 
 }
 
@@ -78,6 +78,10 @@ CONTAINER
     text-align:center;
 
     position:relative;
+
+    margin:auto;
+
+    padding-bottom:30px;
 
 }
 
@@ -469,6 +473,19 @@ MOBILE
 
     .dpad{
         display:flex;
+    }
+
+}
+
+@media(max-width:768px){
+
+    body{
+        align-items:flex-start;
+    }
+
+    .container{
+        margin-top:20px;
+        margin-bottom:40px;
     }
 
 }
@@ -1913,4 +1930,4 @@ draw();
 </script>
 
 </body>
-</html>
+</html>S
